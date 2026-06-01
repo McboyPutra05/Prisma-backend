@@ -1,0 +1,17 @@
+# Menyembunyikan file environment
+.env
+
+# Menyembunyikan file hasil build Golang
+/main
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Menyembunyikan folder module/vendor Golang
+/vendor/
+
+# Menyembunyikan file OS
+.DS_Store
+Thumbs.db
