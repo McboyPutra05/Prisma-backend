@@ -25,6 +25,11 @@ func CreatePembayaran(c *gin.Context) {
 		return
 	}
 
+	if input.Nominal <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Nominal pembayaran tidak valid"})
+		return
+	}
+
 	bulan := "Januari"
 	if len(input.Tanggal) >= 7 {
 		monthStr := input.Tanggal[5:7]

@@ -23,6 +23,14 @@ func CreateStatusBarang(c *gin.Context) {
 		return
 	}
 
+	notifPetugas := models.Notification{
+		CustomerID: "PETUGAS",
+		Title:      "Pesanan Baru Masuk! 📦",
+		Message:    "Ada pesanan baru dari " + input.CustomerName + " dengan kode " + input.Code + " yang menunggu diproses.",
+		IsRead:     false,
+	}
+	config.DB.Create(&notifPetugas)
+
 	c.JSON(http.StatusOK, gin.H{"message": "Data status barang berhasil ditambahkan!", "data": input})
 }
 
@@ -30,10 +38,19 @@ func GetStatusBarang(c *gin.Context) {
 	var statusBarangs []models.StatusBarang
 
 	status := c.Query("status")
+	customerId := c.Query("customer_id")
 
 	query := config.DB
 	if status != "" {
 		query = query.Where("status = ?", status)
+	}
+	if customerId != "" {
+		var user models.User
+		if err := config.DB.First(&user, customerId).Error; err == nil {
+			query = query.Where("customer_name = ?", user.Name)
+		} else {
+			query = query.Where("customer_id = ?", customerId)
+		}
 	}
 
 	if err := query.Order("created_at desc").Find(&statusBarangs).Error; err != nil {
@@ -75,6 +92,14 @@ func UpdateStatusBarang(c *gin.Context) {
 			IsRead:     false,
 		}
 		config.DB.Create(&notif)
+	} else if input.Status == "Sedang diproses" || input.Status == "Diproses" {
+		notif := models.Notification{
+			CustomerID: fmt.Sprintf("%v", barang.CustomerID),
+			Title:      "Cucian Sedang Diproses! ⏳",
+			Message:    "Cucian kamu dengan PO " + barang.Code + " sedang dikerjakan oleh petugas kami.",
+			IsRead:     false,
+		}
+		config.DB.Create(&notif)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Status barang berhasil diupdate menjadi: " + input.Status})
@@ -96,15 +121,19 @@ func UpdateKeteranganBarang(c *gin.Context) {
 	keteranganBytes, _ := json.Marshal(input.Keterangan)
 	keteranganString := string(keteranganBytes)
 
-	result := config.DB.Model(&models.StatusBarang{}).Where("id = ?", id).Update("keterangan", keteranganString)
-
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan keterangan"})
+	var barang models.StatusBarang
+	if err := config.DB.First(&barang, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Data status barang tidak ditemukan"})
 		return
 	}
 
-	if result.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Data status barang tidak ditemukan"})
+	if barang.Status == "Sedang diproses" || barang.Status == "Selesai" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Tidak dapat mengubah rincian karena cucian sudah diproses atau selesai"})
+		return
+	}
+
+	if err := config.DB.Model(&barang).Update("keterangan", keteranganString).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan keterangan"})
 		return
 	}
 

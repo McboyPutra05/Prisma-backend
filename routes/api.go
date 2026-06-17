@@ -41,5 +41,8 @@ func SetupRoutes(r *gin.Engine) {
 		api.GET("/pembayaran", controllers.GetPembayaran)
         api.POST("/pembayaran", controllers.CreatePembayaran)
 		api.GET("/pembayaran/customer/:id", controllers.GetPembayaranCustomer)
+
+		api.GET("/notifications/:id", controllers.GetNotifications)
+		api.PUT("/notifications/read/:id", controllers.MarkNotificationRead)
 	}
 }

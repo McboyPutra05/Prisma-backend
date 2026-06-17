@@ -46,10 +46,11 @@ func GetAdmin(c *gin.Context) {
 }
 
 type CreateCustomerInput struct {
-	Name     string `json:"name" binding:"required"`
-	Phone    string `json:"phone" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Role     string `json:"role"`
+	Name         string `json:"name" binding:"required"`
+	Phone        string `json:"phone" binding:"required"`
+	Password     string `json:"password" binding:"required"`
+	Role         string `json:"role"`
+	BillingCycle string `json:"billing_cycle"`
 }
 
 func CreateCustomer(c *gin.Context) {
@@ -67,11 +68,18 @@ func CreateCustomer(c *gin.Context) {
 		return
 	}
 
+	// Default billing cycle ke "Bulanan" jika kosong
+	billingCycle := input.BillingCycle
+	if billingCycle == "" {
+		billingCycle = "Bulanan"
+	}
+
 	newCustomer := models.User{
-		Name:     input.Name,
-		Phone:    input.Phone,
-		Password: string(hashedPassword),
-		Role:     "customer",
+		Name:         input.Name,
+		Phone:        input.Phone,
+		Password:     string(hashedPassword),
+		Role:         "customer",
+		BillingCycle: billingCycle,
 	}
 
 	if err := config.DB.Create(&newCustomer).Error; err != nil {

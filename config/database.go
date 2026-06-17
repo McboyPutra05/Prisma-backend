@@ -36,6 +36,7 @@ func ConnectDatabase() {
 		&models.TagihanRinci{},
 		&models.Customer{},
 		&models.Pembayaran{},
+		&models.Notification{},
 	)
 
 	if err != nil {
