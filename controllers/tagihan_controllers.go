@@ -123,14 +123,15 @@ func GetTagihanRinci(c *gin.Context) {
 		}
 
 		formattedDetails = append(formattedDetails, map[string]interface{}{
-			"tgl":     d.Tanggal,
-			"qty":     d.Qty,
-			"item":    d.Item,
-			"trt":     d.JenisCucian,
-			"harga":   d.Harga,
-			"total":   d.Total,
-			"merk":    d.Merk,
-			"kode_po": d.KodePo,
+			"tgl":       d.Tanggal,
+			"qty":       d.Qty,
+			"item":      d.Item,
+			"trt":       d.JenisCucian,
+			"harga":     d.Harga,
+			"total":     d.Total,
+			"merk":      d.Merk,
+			"kode_po":   d.KodePo,
+			"no_celana": d.NoCelana,
 		})
 	}
 
@@ -155,6 +156,7 @@ func CreateTagihanRinci(c *gin.Context) {
 		Tanggal    string `json:"tanggal"`
 		Merk       string `json:"merk"`
 		KodePO     string `json:"kode_po"`
+		NoCelana   string `json:"no_celana"`
 		Rincian    []struct {
 			Qty         string `json:"qty"`
 			Item        string `json:"item"`
@@ -195,6 +197,7 @@ func CreateTagihanRinci(c *gin.Context) {
 			Harga:       hargaFloat,
 			Total:       total,
 			Status:      "Belum Lunas",
+			NoCelana:    input.NoCelana,
 		}
 		config.DB.Create(&tagihan)
 	}

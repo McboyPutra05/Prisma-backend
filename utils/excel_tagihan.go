@@ -81,7 +81,11 @@ func GenerateTagihanRinciExcel(customerName string, tagihans []models.TagihanRin
 		}
 
 		f.SetCellValue(sheet, fmt.Sprintf("C%d", baris), t.Qty)
-		f.SetCellValue(sheet, fmt.Sprintf("D%d", baris), t.Item) 
+		itemText := t.Item
+		if t.NoCelana != "" {
+			itemText = fmt.Sprintf("%s (No. %s)", t.Item, t.NoCelana)
+		}
+		f.SetCellValue(sheet, fmt.Sprintf("D%d", baris), itemText) 
 		f.SetCellValue(sheet, fmt.Sprintf("E%d", baris), t.JenisCucian)
 		
 		f.SetCellValue(sheet, fmt.Sprintf("F%d", baris), t.Harga)

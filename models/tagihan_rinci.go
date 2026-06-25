@@ -12,6 +12,7 @@ type TagihanRinci struct {
 	Qty         string    `gorm:"type:varchar(20)" json:"qty"`
 	Item        string    `gorm:"type:varchar(255)" json:"item"`
 	JenisCucian string    `gorm:"type:varchar(255)" json:"jenis_cucian"`
+	NoCelana    string    `gorm:"type:varchar(50)" json:"no_celana"`
 	Harga       float64   `json:"harga"`
 	Total       float64   `json:"total"`
 	Status      string    `gorm:"type:varchar(50);default:'Belum Lunas'" json:"status"` 
